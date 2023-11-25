@@ -267,9 +267,11 @@ const Info = styled.div`
   gap: 0.25rem;
   text-align: right;
   b {
+    opacity: 1;
     font-size: 1rem;
   }
   span {
+    opacity: 0.5;
     font-size: 0.875rem;
   }
 `;
