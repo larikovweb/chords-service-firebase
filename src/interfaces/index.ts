@@ -4,7 +4,7 @@ export interface IBlock {
 }
 
 export interface ITrack {
-  id?: number;
+  id: string;
   title: string;
   artist: string;
   blocks: IBlock[];

@@ -9,24 +9,21 @@ import {
 } from '../styled/components';
 import { HelmetHead } from '../components/HelmetHead';
 import { $phoneWidth, $primaryColor } from '../styled/variables';
-import { trackAPI } from '../services/TracksService';
 import { useParams } from 'react-router-dom';
 import { ITrack } from '../interfaces';
 import { InputField } from '../components/fields/InputField';
 import { IconArrow, IconPause } from '../icons';
-import { rem } from '../styled/mixins';
-
-const chords = ['A', 'B', 'H', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
-
-const chordsM = ['Am', 'Bm', 'Hm', 'Cm', 'Cm#', 'Dm', 'Dm#', 'Em', 'Fm', 'Fm#', 'Gm', 'Gm#'];
+import { TransposeChords } from '../components/TransposeChords';
+import useFetchData from '../hooks/useFetchData';
+import { getData } from '../services/firebaseService';
 
 const Track: FC = () => {
   const trackId = useParams<{ id: string }>().id;
-  const { data: track, error, isLoading } = trackAPI.useFetchTrackQuery(trackId ? +trackId : 0);
+  const { data, error, loading: isLoading } = useFetchData<ITrack>(getData, `tracks/${trackId}`);
 
   const loading = isLoading && <div>Идет загрузка...</div>;
   const errorMessage = error && <div>Произошла ошибка при загрузке объявлений</div>;
-  const content = track && <ViewResult track={track} />;
+  const content = data && <ViewResult track={data} />;
 
   return (
     <>
@@ -40,15 +37,17 @@ const Track: FC = () => {
   );
 };
 
-const ViewResult: FC<{ track: ITrack[] }> = ({ track }) => {
-  const selectedTrack = track[0];
+const chordsView = ['A', 'B', 'H', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
+
+const ViewResult: FC<{ track: ITrack }> = ({ track }) => {
   const [scrollSpeed, setScrollSpeed] = useState(0);
   const [isPaused, setPaused] = useState(false);
   const [fontSize, setFontSize] = useState(16);
-  const activeChords = chords.includes(selectedTrack.tonality) ? chords : chordsM;
 
+  const index = chordsView.indexOf(track.tonality);
+  const chords = [...chordsView.slice(index), ...chordsView.slice(0, index)];
   const [transposeAmount, setTransposeAmount] = useState(
-    activeChords.findIndex((chord) => chord === selectedTrack.tonality),
+    chords.findIndex((chord) => chord === track.tonality),
   );
 
   const handleScrollTop = () => {
@@ -61,26 +60,6 @@ const ViewResult: FC<{ track: ITrack[] }> = ({ track }) => {
 
   const handlePause = () => {
     setPaused(!isPaused);
-  };
-
-  const transposeChords = (text: string, transposeAmount: number): JSX.Element => {
-    const regex = /\{([A-Za-z0-9#]+)\}/g;
-
-    const transposedChords = text.split(regex).map((part, index) => {
-      if (index % 2 === 1) {
-        const chord = part;
-        const chordIndex = chords.indexOf(chord);
-        const transposedIndex = (chordIndex + transposeAmount) % chords.length;
-        const transposedChord = chords[transposedIndex];
-        return <i key={index}>{transposedChord}</i>;
-      } else {
-        return part;
-      }
-    });
-
-    console.log(transposedChords);
-
-    return <>{transposedChords}</>;
   };
 
   useEffect(() => {
@@ -108,15 +87,15 @@ const ViewResult: FC<{ track: ITrack[] }> = ({ track }) => {
 
   return (
     <>
-      <HelmetHead title={selectedTrack.title} descr={selectedTrack.title} />
+      <HelmetHead title={track.title} descr={track.title} />
       <Sidebar>
-        <GeneralLabel>{selectedTrack.title}</GeneralLabel>
+        <GeneralLabel>{track.title}</GeneralLabel>
         <Settings>
           <InputField label="Тональность">
             <Select
               value={transposeAmount}
               onChange={(val) => setTransposeAmount(Number(val.target.value))}>
-              {activeChords.map((chord, i) => (
+              {chords.map((chord, i) => (
                 <Option key={chord} value={i}>
                   {chord}
                 </Option>
@@ -126,7 +105,7 @@ const ViewResult: FC<{ track: ITrack[] }> = ({ track }) => {
               style={{ width: '100%' }}
               type="range"
               min={0}
-              max={activeChords.length - 1}
+              max={chords.length - 1}
               value={transposeAmount}
               onChange={(e) => setTransposeAmount(Number(e.target.value))}
             />
@@ -143,10 +122,10 @@ const ViewResult: FC<{ track: ITrack[] }> = ({ track }) => {
       </Sidebar>
       <Wrapper>
         <GeneralLabel>Текст</GeneralLabel>
-        {selectedTrack.blocks.map((t, i) => (
-          <Block style={{ fontSize: rem(fontSize) }} key={i}>
+        {track.blocks.map((t, i) => (
+          <Block style={{ fontSize: `${fontSize / 16}rem` }} key={i}>
             <Name>{t.title}</Name>
-            <pre>{transposeChords(t.text, transposeAmount)}</pre>
+            <TransposeChords text={t.text} chords={chords} transposeAmount={transposeAmount} />
           </Block>
         ))}
         <ArrowsWrap>

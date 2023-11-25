@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { FC, useEffect, useState } from 'react';
 import { ITrack } from '../interfaces';
-import { trackAPI } from '../services/TracksService';
+// import { trackAPI } from '../services/TracksService';
 import {
   Button,
   ButtonTransparent,
@@ -15,8 +15,10 @@ import { IconAdd, IconDelete } from '../icons';
 import { InputField } from './fields/InputField';
 import { Controller, useForm } from 'react-hook-form';
 import { $phoneWidth, $primaryColor } from '../styled/variables';
+import { setData, updateData } from '../services/firebaseService';
 
 type Props = {
+  refetch: () => Promise<void>;
   editableTrack?: ITrack;
   setEditableTrack: React.Dispatch<React.SetStateAction<ITrack | undefined>>;
 };
@@ -48,23 +50,19 @@ const chords = [
   'Gm#',
 ];
 
-export const FormTrack: FC<Props> = ({ editableTrack, setEditableTrack }) => {
-  const [createTrack] = trackAPI.useCreateTrackMutation();
-  const [updateTrack] = trackAPI.useUpdateTrackMutation();
-
+export const FormTrack: FC<Props> = ({ editableTrack, setEditableTrack, refetch }) => {
   const [textBlocks, setTextBlocks] = useState<string[]>(['']);
 
   const onSubmit = async (data: ITrack) => {
     if (editableTrack) {
-      await updateTrack({ ...data, id: editableTrack.id });
-      reset();
-      setTextBlocks(['']);
-      setEditableTrack(undefined);
+      await updateData(`tracks/${editableTrack.id}`, data);
     } else {
-      await createTrack(data);
-      setTextBlocks(['']);
-      reset();
+      await setData('tracks', data);
     }
+    refetch();
+    setTextBlocks(['']);
+    reset();
+    setEditableTrack(undefined);
   };
 
   const {

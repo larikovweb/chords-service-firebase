@@ -2,29 +2,44 @@ import styled from '@emotion/styled';
 import { FC, useState } from 'react';
 import { ButtonTransparent, Container, GeneralBox, GeneralLabel } from '../styled/components';
 import { FormTrack } from '../components/FormTrack';
-import { trackAPI } from '../services/TracksService';
 import { TrackRow } from '../components/TrackRow';
 import { IconDelete, IconEdit } from '../icons';
 import { $phoneWidth, $redColor } from '../styled/variables';
 import { ITrack } from '../interfaces';
+import { deleteData, getData } from '../services/firebaseService';
+import useFetchData from '../hooks/useFetchData';
+import { transformObjectToArray } from '../helpers/fn';
 
 const Admin: FC = () => {
   const [editableTrack, setEditableTrack] = useState<ITrack>();
 
-  const { data: tracks, error, isLoading, refetch } = trackAPI.useFetchAllTracksQuery(1000);
-  const [deleteTrack] = trackAPI.useDeleteTrackMutation();
+  const {
+    data: tracks,
+    error,
+    loading: isLoading,
+    refetch,
+  } = useFetchData<{ [key: string]: ITrack }>(getData, 'tracks');
+
+  const deleteTrack = async (trackId: string) => {
+    const response = await deleteData(`tracks/${trackId}`);
+    if (response.error) {
+      console.error(response.error);
+      return;
+    }
+    refetch();
+  };
 
   const loading = isLoading && <div>Идет загрузка...</div>;
   const errorMessage = error && <div>Произошла ошибка при загрузке объявлений</div>;
   const content =
     tracks &&
-    tracks.map((track) => (
-      <TrackRow key={track.id} track={track}>
+    transformObjectToArray(tracks).map((track, i) => (
+      <TrackRow key={i} track={track}>
         <DeleteBtn
           onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.preventDefault();
             if (window.confirm('Вы уверены, что хотите удалить трек?')) {
-              deleteTrack(track);
+              deleteTrack(track.id);
               refetch();
             }
           }}>
@@ -42,7 +57,11 @@ const Admin: FC = () => {
 
   return (
     <Wrapper>
-      <FormTrack setEditableTrack={setEditableTrack} editableTrack={editableTrack} />
+      <FormTrack
+        refetch={refetch}
+        setEditableTrack={setEditableTrack}
+        editableTrack={editableTrack}
+      />
       <List>
         <GeneralBox>
           <GeneralLabel>Созданные треки</GeneralLabel>

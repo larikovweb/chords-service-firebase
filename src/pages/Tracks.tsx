@@ -4,6 +4,9 @@ import { Container, GeneralBox, GeneralLabel } from '../styled/components';
 import { HelmetHead } from '../components/HelmetHead';
 import useFetchData from '../hooks/useFetchData';
 import { getData } from '../services/firebaseService';
+import { ITrack } from '../interfaces';
+import { TrackRow } from '../components/TrackRow';
+import { transformObjectToArray } from '../helpers/fn';
 
 export interface IExercise {
   name: string;
@@ -29,20 +32,28 @@ export interface ICourse {
 }
 
 const Tracks: FC = () => {
-  const { loading, data, error, refetch } = useFetchData<ICourse>(getData, 'courses');
-  console.log(data, loading, error, refetch);
+  const {
+    data,
+    error,
+    loading: isLoading,
+  } = useFetchData<{ [key: string]: ITrack }>(getData, 'tracks');
+
+  const loading = isLoading && <div>Идет загрузка...</div>;
+  const errorMessage = error && <div>Произошла ошибка при загрузке объявлений</div>;
+  const content =
+    data && transformObjectToArray(data).map((track) => <TrackRow key={track.id} track={track} />);
+
   return (
     <>
       <HelmetHead title="Заголовок Главной" descr="Описание Главной" />
       <Wrapper>
         <GeneralBox>
           <GeneralLabel>Треки</GeneralLabel>
-          {/* {loading}
+          {loading}
           {errorMessage}
-          {content} */}
+          {content}
         </GeneralBox>
       </Wrapper>
-      ;
     </>
   );
 };
