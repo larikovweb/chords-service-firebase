@@ -238,9 +238,9 @@ const Arrows = styled.div`
   top: 1rem;
   right: 0;
   border-radius: 0.25rem;
-  transform: translateX(50%);
+  transform: translateX(20%);
   background-color: #ffff;
-  padding: 0.5rem;
+  padding: 0.15rem;
   box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.3);
 `;
 

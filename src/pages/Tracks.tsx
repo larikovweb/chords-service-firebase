@@ -8,6 +8,7 @@ import { IGroup, ITrack } from '../interfaces';
 import { TrackRow } from '../components/TrackRow';
 import { transformObjectToArray } from '../helpers/fn';
 import { Groups } from '../components/Groups';
+import { $phoneWidth } from '../styled/variables';
 
 const Tracks: FC = () => {
   const [selectedGroup, setSelectedGroup] = useState<IGroup | null>(null);
@@ -68,6 +69,9 @@ const Wrapper = styled(Container)`
   grid-template-columns: 25rem 1fr;
   gap: 1.5rem;
   min-height: 80vh;
+  @media screen and (max-width: ${$phoneWidth}) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const Scroll = styled.div`

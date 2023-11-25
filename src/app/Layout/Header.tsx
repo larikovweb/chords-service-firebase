@@ -12,17 +12,17 @@ export const Header: FC = () => {
   return (
     <Wrapper>
       <Container>
-        <Link to={TRACKS_ROUTE}>Все треки</Link>
+        <Link to={TRACKS_ROUTE}>Треки</Link>
         <Btns>
           {isAuth ? (
             <>
-              <Link to={ADMIN_ROUTE}>Админ панель</Link>
+              <Link to={ADMIN_ROUTE}>Админка</Link>
               <Link to="#" onClick={logout}>
                 Выйти
               </Link>
             </>
           ) : (
-            <Link to={LOGIN_ROUTE}>Авторизация</Link>
+            <Link to={LOGIN_ROUTE}>Войти</Link>
           )}
         </Btns>
       </Container>

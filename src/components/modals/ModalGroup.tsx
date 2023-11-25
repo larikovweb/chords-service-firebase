@@ -7,7 +7,7 @@ import { getData, setData, updateData } from '../../services/firebaseService';
 import useFetchData from '../../hooks/useFetchData';
 import { transformObjectToArray } from '../../helpers/fn';
 import { Controller, useForm } from 'react-hook-form';
-import { $primaryColor } from '../../styled/variables';
+import { $phoneWidth, $primaryColor } from '../../styled/variables';
 
 export const ModalGroup: FC<{ isEdit?: boolean; group?: IGroup; refetchGroups: () => void }> = ({
   refetchGroups,
@@ -151,6 +151,9 @@ const TrackCrad: FC<{ track: ITrack; onClick: () => void; selected: boolean }> =
 
 const Wrapper = styled.div`
   width: 30rem;
+  @media screen and (max-width: ${$phoneWidth}) {
+    width: 100%;
+  }
 `;
 
 const Title = styled.h3`
@@ -185,6 +188,9 @@ const Tracks = styled.div`
   -webkit-overflow-scrolling: touch;
   scrollbar-color: rgba(25, 25, 28, 0.2) rgba(25, 25, 28, 0.15); /* «цвет ползунка» «цвет полосы скроллбара» */
   scrollbar-width: thin;
+  @media screen and (max-width: ${$phoneWidth}) {
+    grid-template-columns: 1fr;
+  }
   &::-webkit-scrollbar {
     width: 0.5rem;
     height: 0.5rem;

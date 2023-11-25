@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { GeneralBox, GeneralLabel } from '../styled/components';
 import { IconAdd, IconDelete, IconEdit } from '../icons';
 import styled from '@emotion/styled';
-import { $primaryColor, $redColor } from '../styled/variables';
+import { $phoneWidth, $primaryColor, $redColor } from '../styled/variables';
 import { ModalControl } from './modals/ModalControl';
 import { ModalGroup } from './modals/ModalGroup';
 import { useAuth } from '../hooks/useAuth';
@@ -180,6 +180,9 @@ const Scroll = styled.div`
   &::-webkit-scrollbar-button:horizontal:end:increment {
     background: transparent;
   }
+  @media screen and (max-width: ${$phoneWidth}) {
+    max-height: 15rem;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -203,6 +206,9 @@ const Name = styled.div`
   font-size: 1.25rem;
   word-wrap: break-word;
   overflow-wrap: anywhere;
+  @media screen and (max-width: ${$phoneWidth}) {
+    font-size: 1rem;
+  }
 `;
 
 const Btns = styled.div`

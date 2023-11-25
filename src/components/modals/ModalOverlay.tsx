@@ -1,6 +1,8 @@
 import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
-import { FC } from 'react';
+import { FC, useEffect, useRef } from 'react';
+import { $phoneWidth } from '../../styled/variables';
+import { useLocation } from 'react-router-dom';
 
 type Props = {
   open?: boolean;
@@ -9,11 +11,49 @@ type Props = {
   onClick: (e: React.MouseEvent) => void;
 };
 
-export const ModalOverlay: FC<Props> = ({ open = false, children, setOpen, onClick }) => {
+export const ModalOverlay: FC<Props> = ({ open = false, children, setOpen }) => {
+  const location = useLocation();
+  const wasOpen = useRef(open);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    wasOpen.current = open;
+
+    if (open && location.pathname !== '#modal') {
+      window.history.pushState(null, '', '#modal');
+    } else if (!open && location.pathname === '#modal') {
+      window.history.back();
+    }
+  }, [open, location]);
+
+  useEffect(() => {
+    if (location.pathname !== '#modal' && wasOpen.current) {
+      setOpen(false);
+    }
+  }, [location, setOpen]);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      window.history.back();
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      document.addEventListener('click', handleClickOutside);
+    } else {
+      document.removeEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [open]);
+
   return (
     <>
       {open && (
-        <Wrapper onClick={onClick}>
+        <Wrapper ref={modalRef}>
           <Overlay onClick={() => setOpen(false)} />
           <Content>{children}</Content>
         </Wrapper>
@@ -58,4 +98,7 @@ const Content = styled.div`
   border-radius: 0.75rem;
   background: #fff;
   padding: 1.75rem 1.25rem;
+  @media screen and (max-width: ${$phoneWidth}) {
+    width: 94%;
+  }
 `;
