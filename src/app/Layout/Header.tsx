@@ -2,15 +2,29 @@ import styled from '@emotion/styled';
 import { FC } from 'react';
 import { Container } from '../../styled/components';
 import { Link } from 'react-router-dom';
-import { ADMIN_ROUTE, TRACKS_ROUTE } from '../../utils/consts';
+import { ADMIN_ROUTE, LOGIN_ROUTE, TRACKS_ROUTE } from '../../utils/consts';
 import { $phoneWidth, $primaryColor } from '../../styled/variables';
+import { useAuth } from '../../hooks/useAuth';
 
 export const Header: FC = () => {
+  const { isAuth, logout } = useAuth();
+
   return (
     <Wrapper>
       <Container>
         <Link to={TRACKS_ROUTE}>Все треки</Link>
-        <Link to={ADMIN_ROUTE}>Авторизация</Link>
+        <Btns>
+          {isAuth ? (
+            <>
+              <Link to={ADMIN_ROUTE}>Админ панель</Link>
+              <Link to="#" onClick={logout}>
+                Выйти
+              </Link>
+            </>
+          ) : (
+            <Link to={LOGIN_ROUTE}>Авторизация</Link>
+          )}
+        </Btns>
       </Container>
     </Wrapper>
   );
@@ -40,4 +54,8 @@ const Wrapper = styled.header`
   @media screen and (max-width: ${$phoneWidth}) {
     margin-bottom: 0.5rem;
   }
+`;
+
+const Btns = styled.div`
+  display: flex;
 `;

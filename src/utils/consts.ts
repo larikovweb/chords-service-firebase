@@ -2,6 +2,7 @@
 export const TRACKS_ROUTE = '/';
 export const TRACK_ROUTE = '/track';
 export const ADMIN_ROUTE = '/create';
+export const LOGIN_ROUTE = '/login';
 
 export const NOT_FOUND_ROUTE = '*';
 
