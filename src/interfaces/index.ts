@@ -16,3 +16,9 @@ export interface IUser {
   token: string | null;
   id: string | null;
 }
+
+export interface IGroup {
+  id: string;
+  name: string;
+  tracks: string[];
+}

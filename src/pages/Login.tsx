@@ -1,10 +1,11 @@
 import { FC } from 'react';
 import { Button, Input } from '../styled/components';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Auth } from '../styled/auth';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { ADMIN_ROUTE } from '../utils/consts';
+import { InputField } from '../components/fields/InputField';
 
 type Form = {
   email: string;
@@ -13,7 +14,11 @@ type Form = {
 
 export const Login: FC = () => {
   const navigate = useNavigate();
-  const { register, handleSubmit } = useForm<Form>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Form>();
 
   const onSubmit = async (data: Form) => {
     const auth = getAuth();
@@ -32,13 +37,31 @@ export const Login: FC = () => {
     <Auth.Wrapper>
       <Auth.Form onSubmit={handleSubmit(onSubmit)}>
         <Auth.Title>Авторизация</Auth.Title>
-        <Input {...register('email')} type="email" placeholder="Email" />
-        <Input {...register('password')} type="password" placeholder="Пароль" />
+        <InputField error={errors.email?.message}>
+          <Input
+            {...register('email', {
+              required: 'Поле обязательно для заполнения',
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                message: 'Некорректный email',
+              },
+            })}
+            type="email"
+            placeholder="Email"
+          />
+        </InputField>
+        <InputField error={errors.password?.message}>
+          <Input
+            {...register('password', { required: 'Поле обязательно для заполнения' })}
+            type="password"
+            placeholder="Пароль"
+          />
+        </InputField>
         <Button type="submit">Войти</Button>
-        <Auth.Links>
+        {/* <Auth.Links>
           <Link to="/register">Регистрация</Link>
           <Link to="/reset-password">Забыли пароль?</Link>
-        </Auth.Links>
+        </Auth.Links> */}
       </Auth.Form>
     </Auth.Wrapper>
   );

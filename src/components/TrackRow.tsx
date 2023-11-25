@@ -23,12 +23,13 @@ export const TrackRow: FC<Props> = ({ track, children }) => {
 };
 
 const Wrapper = styled(Link)`
-  padding: 1.5rem 1rem;
+  padding: 1rem;
   display: flex;
   align-items: center;
   padding-left: 4rem;
   position: relative;
-  transition: background 0.3s;
+  border-radius: 0.5rem;
+  transition: box-shadow 0.3s;
   &:not(:last-child) {
     border-bottom: 0.0625rem solid rgba(25, 25, 28, 0.08);
   }
@@ -59,7 +60,7 @@ const Wrapper = styled(Link)`
     z-index: 1;
   }
   &:hover {
-    background: #f9fafc;
+    box-shadow: 0 0 1rem 0 rgba(25, 25, 28, 0.12);
   }
   b {
     color: ${$primaryColor};
