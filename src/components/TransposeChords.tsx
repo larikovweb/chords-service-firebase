@@ -9,7 +9,7 @@ type Props = {
 export const TransposeChords: FC<Props> = ({ text, transposeAmount, chords }) => {
   const transposeChords = (text: string, transposeAmount: number): JSX.Element => {
     const regex = /\{([A-Za-z0-9#]+)\}/g;
-    console.log(text);
+
     const transposedChords = text.split(regex).map((part, index) => {
       if (index % 2 === 1) {
         const chord = part;
@@ -17,11 +17,16 @@ export const TransposeChords: FC<Props> = ({ text, transposeAmount, chords }) =>
         const chordWithoutSuffix = isMinorChord ? chord.slice(0, -1) : chord;
         const chordIndex = chords.indexOf(chordWithoutSuffix);
         const transposedIndex = (chordIndex + transposeAmount) % chords.length;
-        const transposedChord = chords[transposedIndex][0] + (isMinorChord ? 'm' : '');
+        let transposedChord = '';
+
+        if (chords[transposedIndex]) {
+          transposedChord = chords[transposedIndex][0] + (isMinorChord ? 'm' : '');
+        }
+
         return (
           <i key={index}>
             {transposedChord}
-            {chords[transposedIndex][1] ?? ''}
+            {chords[transposedIndex] ? chords[transposedIndex][1] ?? '' : ''}
           </i>
         );
       } else {
