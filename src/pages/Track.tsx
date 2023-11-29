@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 import { ITrack } from '../interfaces';
 import { InputField } from '../components/fields/InputField';
 import { IconArrow, IconPause } from '../icons';
-import { TransposeChords } from '../components/TransposeChords';
+import TransposeChords from '../components/TransposeChords';
 import useFetchData from '../hooks/useFetchData';
 import { getData } from '../services/firebaseService';
 
@@ -125,7 +125,7 @@ const ViewResult: FC<{ track: ITrack }> = ({ track }) => {
         {track.blocks.map((t, i) => (
           <Block style={{ fontSize: `${fontSize / 16}rem` }} key={i}>
             <Name>{t.title}</Name>
-            <TransposeChords text={t.text} chords={chords} transposeAmount={transposeAmount} />
+            <TransposeChords text={t.text} transposeAmount={transposeAmount} />
           </Block>
         ))}
         <ArrowsWrap>
