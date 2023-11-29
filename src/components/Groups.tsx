@@ -89,7 +89,8 @@ const Group: FC<{
   };
 
   return (
-    <GroupWrapper $selected={selected} onClick={onClick}>
+    <GroupWrapper $selected={selected}>
+      <Overlay onClick={onClick} />
       <Name>{group.name}</Name>
       {isAuth && (
         <Btns>
@@ -115,6 +116,15 @@ const Head = styled(GeneralLabel)`
   b {
     opacity: 0.5;
   }
+`;
+
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
 `;
 
 const Btn = styled.button`
@@ -191,6 +201,7 @@ const Wrapper = styled.div`
 `;
 
 const GroupWrapper = styled.div<{ $selected?: boolean }>`
+  position: relative;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -212,6 +223,7 @@ const Name = styled.div`
 `;
 
 const Btns = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
