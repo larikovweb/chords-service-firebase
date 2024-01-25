@@ -37,10 +37,11 @@ const transposeChord = (chord: string, semitoneShift: number): string => {
   return newChord;
 };
 
-const TransposeChords: React.FC<{ text: string; transposeAmount: number }> = ({
-  text,
-  transposeAmount,
-}) => {
+const TransposeChords: React.FC<{
+  text: string;
+  transposeAmount: number;
+  showChordsOnly: boolean;
+}> = ({ text, transposeAmount, showChordsOnly }) => {
   const regex = /\{([A-Za-z0-9#]+)\}/g;
 
   const transposedText = text.split(regex).map((part, index) => {
@@ -49,13 +50,29 @@ const TransposeChords: React.FC<{ text: string; transposeAmount: number }> = ({
       const adjustedChord = adjustments[part] || part;
       try {
         const transposedChord = transposeChord(adjustedChord, transposeAmount);
-        return <i key={index}>{transposedChord}</i>;
+        return (
+          <i className={showChordsOnly ? 'hide-text' : ''} key={index}>
+            {transposedChord}
+          </i>
+        );
       } catch (error) {
         console.error(error);
-        return <i key={index}>{part}</i>; // Return original part if there is an error
+        return (
+          <i className={showChordsOnly ? 'hide-text' : ''} key={index}>
+            {part}
+          </i>
+        ); // Return original part if there is an error
       }
     } else {
-      return part;
+      // Если showChordsOnly включен, удаляем все пробелы, кроме переносов строк
+      const textPart = showChordsOnly ? part.replace(/[ \t]+/g, '') : part;
+      return (
+        <span
+          className={showChordsOnly && part.replace(/\s+/g, '').length > 0 ? 'hide' : ''}
+          key={index}>
+          {textPart}
+        </span>
+      );
     }
   });
 

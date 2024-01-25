@@ -43,12 +43,17 @@ const ViewResult: FC<{ track: ITrack }> = ({ track }) => {
   const [scrollSpeed, setScrollSpeed] = useState(0);
   const [isPaused, setPaused] = useState(false);
   const [fontSize, setFontSize] = useState(16);
+  const [showChordsOnly, setShowChordsOnly] = useState(false);
 
   const index = chordsView.indexOf(track.tonality);
   const chords = [...chordsView.slice(index), ...chordsView.slice(0, index)];
   const [transposeAmount, setTransposeAmount] = useState(
     chords.findIndex((chord) => chord === track.tonality),
   );
+
+  const toggleChordsOnly = () => {
+    setShowChordsOnly((prev) => !prev); // Переключение состояния
+  };
 
   const handleScrollTop = () => {
     setScrollSpeed((state) => state + 1);
@@ -118,6 +123,11 @@ const ViewResult: FC<{ track: ITrack }> = ({ track }) => {
               - шрифт
             </ButtonTransparent>
           </Row>
+          <Row>
+            <ButtonTransparent style={{ marginTop: '1rem' }} onClick={toggleChordsOnly}>
+              {showChordsOnly ? 'Показать текст и аккорды' : 'Показать только аккорды'}
+            </ButtonTransparent>
+          </Row>
         </Settings>
       </Sidebar>
       <Wrapper>
@@ -125,7 +135,11 @@ const ViewResult: FC<{ track: ITrack }> = ({ track }) => {
         {track.blocks.map((t, i) => (
           <Block style={{ fontSize: `${fontSize / 16}rem` }} key={i}>
             <Name>{t.title}</Name>
-            <TransposeChords text={t.text} transposeAmount={transposeAmount} />
+            <TransposeChords
+              showChordsOnly={showChordsOnly}
+              text={t.text}
+              transposeAmount={transposeAmount}
+            />
           </Block>
         ))}
         <ArrowsWrap>
@@ -190,6 +204,19 @@ const Block = styled.div`
   i {
     color: ${$primaryColor};
     font-weight: bold;
+  }
+  span {
+    transition: opacity 0.3s;
+  }
+  .hide {
+    display: block;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hide-text {
+    margin-right: 0.5rem;
   }
 `;
 
